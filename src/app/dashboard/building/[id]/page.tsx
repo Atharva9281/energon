@@ -51,25 +51,17 @@ function getAlertColor(alert: 'green' | 'yellow' | 'red') {
   }
 }
 
-export default function BuildingDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function BuildingDetailPage({ params }: { params: { id: string } }) {
   const [buildingData, setBuildingData] = useState<Building | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [buildingId, setBuildingId] = useState<string>('');
+  const buildingId = params.id;
 
   useEffect(() => {
-    params.then(({ id }) => {
-      setBuildingId(id);
-    });
-  }, [params]);
-
-  useEffect(() => {
-    if (buildingId) {
-      const foundBuilding = mockData.buildings.find(b => b.id === buildingId);
-      if (foundBuilding) {
-        setBuildingData(foundBuilding);
-      }
+    const foundBuilding = mockData.buildings.find(b => b.id === buildingId);
+    if (foundBuilding) {
+      setBuildingData(foundBuilding);
     }
     setIsClient(true);
   }, [buildingId]);
