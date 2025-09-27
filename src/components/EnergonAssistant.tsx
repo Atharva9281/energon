@@ -298,8 +298,9 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
 
             {/* Right Main Chat Panel */}
             <div className={cn("flex-1 flex flex-col h-full min-h-0", isFullScreen ? "bg-background" : "bg-white dark:bg-zinc-900")}>
-                {/* Header - Show on mobile for overlay, hidden for fullscreen */}
-                 <header className={cn("flex items-center justify-between p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm", isFullScreen && "md:hidden")}>
+                {/* Header - Only show for overlay mode, not fullscreen */}
+                 {!isFullScreen && (
+                 <header className="flex items-center justify-between p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                         {/* Mobile: Show New Chat button */}
                         <Button variant="ghost" size="sm" className="md:hidden gap-2 flex-shrink-0" onClick={handleNewChat}>
@@ -313,6 +314,7 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
                         <Button variant="ghost" size="icon" className="w-8 h-8 md:w-9 md:h-9" onClick={() => setIsOpen(false)}><X className="w-4 h-4"/></Button>
                     </div>
                 </header>
+                )}
 
                 {/* Chat Body */}
                 <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6 space-y-3 md:space-y-4 lg:space-y-6 min-h-0">
