@@ -64,81 +64,87 @@ function DashboardView({ buildings, currentTime }: { buildings: Building[], curr
     return (
         <main className="flex-1 p-4 md:p-8">
             {/* Header */}
-            <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger className="md:hidden" />
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                  Buildings Overview
-                </h1>
+            <header className="mb-6 md:mb-8">
+              <div className="flex items-center justify-between mb-4 md:mb-0">
+                <div className="flex items-center gap-3">
+                  <SidebarTrigger className="md:hidden" />
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground">
+                    Buildings Overview
+                  </h1>
+                </div>
+                <div className="text-xs md:text-sm text-muted-foreground hidden sm:block">
+                  {isClient && currentTime
+                      ? `${currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} ${currentTime.toLocaleTimeString()}`
+                      : 'Loading...'}
+                </div>
               </div>
-
-              <div className="text-sm text-muted-foreground">
+              <div className="text-xs text-muted-foreground sm:hidden">
                 {isClient && currentTime
-                    ? `${currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} ${currentTime.toLocaleTimeString()}`
+                    ? `${currentTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} ${currentTime.toLocaleTimeString()}`
                     : 'Loading...'}
               </div>
             </header>
 
             {/* Summary Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 mb-6 md:mb-8">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Total Buildings</CardTitle>
-                        <BuildingIcon className="w-4 h-4 text-muted-foreground"/>
+                        <CardTitle className="text-xs sm:text-sm font-medium">Total Buildings</CardTitle>
+                        <BuildingIcon className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{buildings.length}</div>
+                        <div className="text-lg sm:text-2xl font-bold">{buildings.length}</div>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Energy (Today)</CardTitle>
-                        <Zap className="w-4 h-4 text-muted-foreground"/>
+                        <CardTitle className="text-xs sm:text-sm font-medium">Energy (Today)</CardTitle>
+                        <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalEnergyToday} kWh</div>
+                        <div className="text-lg sm:text-2xl font-bold">{totalEnergyToday} kWh</div>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Avg. Temp</CardTitle>
-                        <Thermometer className="w-4 h-4 text-muted-foreground"/>
+                        <CardTitle className="text-xs sm:text-sm font-medium">Avg. Temp</CardTitle>
+                        <Thermometer className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{avgBuildingTemp}°F</div>
+                        <div className="text-lg sm:text-2xl font-bold">{avgBuildingTemp}°F</div>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Units Online</CardTitle>
-                        <Wifi className="w-4 h-4 text-muted-foreground"/>
+                        <CardTitle className="text-xs sm:text-sm font-medium">Units Online</CardTitle>
+                        <Wifi className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalOnlineUnits} / {totalUnits}</div>
+                        <div className="text-lg sm:text-2xl font-bold">{totalOnlineUnits} / {totalUnits}</div>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Total Alerts</CardTitle>
-                        <AlertTriangle className="w-4 h-4 text-muted-foreground"/>
+                        <CardTitle className="text-xs sm:text-sm font-medium">Total Alerts</CardTitle>
+                        <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalAlerts}</div>
+                        <div className="text-lg sm:text-2xl font-bold">{totalAlerts}</div>
                     </CardContent>
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Critical Alerts</CardTitle>
-                        <ShieldAlert className="w-4 h-4 text-destructive"/>
+                        <CardTitle className="text-xs sm:text-sm font-medium">Critical Alerts</CardTitle>
+                        <ShieldAlert className="w-3 h-3 sm:w-4 sm:h-4 text-destructive"/>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-destructive">{totalCriticalAlerts}</div>
+                        <div className="text-lg sm:text-2xl font-bold text-destructive">{totalCriticalAlerts}</div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Buildings Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {buildings.map((building) => (
                 <Link href={`/dashboard/building/${building.id}`} key={building.id} className="flex">
                   <Card

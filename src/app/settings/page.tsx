@@ -501,12 +501,12 @@ export default function SettingsPage() {
             {/* Mobile Header */}
             <div className="lg:hidden mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <SidebarTrigger />
+                <SidebarTrigger className="flex-shrink-0" />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.push('/dashboard')}
-                  className="gap-2"
+                  className="gap-2 flex-shrink-0"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Dashboard
