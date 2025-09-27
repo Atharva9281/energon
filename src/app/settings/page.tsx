@@ -32,7 +32,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -85,7 +85,7 @@ export default function SettingsPage() {
     },
   });
 
-  const updateSetting = (section: string, key: string, value: any) => {
+  const updateSetting = (section: string, key: string, value: string | boolean) => {
     setSettings(prev => ({
       ...prev,
       [section]: {
