@@ -15,12 +15,12 @@ import {
   X,
   ShieldAlert,
   Wifi,
+  Menu,
 } from 'lucide-react';
 
 import {
   SidebarProvider,
   Sidebar,
-  SidebarTrigger,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -31,6 +31,8 @@ import { EnergonAssistant } from '@/components/EnergonAssistant';
 import { mockData } from '@/lib/data';
 import type { Building } from '@/lib/types';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 function getAlertColor(alerts: { critical: number; warning: number }) {
   if (alerts.critical > 0) {
@@ -67,7 +69,44 @@ function DashboardView({ buildings, currentTime }: { buildings: Building[], curr
             <header className="mb-6 md:mb-8">
               <div className="flex items-center justify-between mb-4 md:mb-0">
                 <div className="flex items-center gap-3">
-                  <SidebarTrigger className="md:hidden" />
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="icon" className="md:hidden">
+                        <Menu className="h-5 w-5" />
+                        <span className="sr-only">Toggle Navigation</span>
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-72 p-0">
+                      <div className="flex h-full flex-col">
+                        <div className="p-6">
+                          <h2 className="text-lg font-semibold">Navigation</h2>
+                        </div>
+                        <nav className="flex-1 space-y-2 p-4">
+                          <Link 
+                            href="/dashboard" 
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
+                          >
+                            <LayoutDashboard className="h-4 w-4" />
+                            Dashboard
+                          </Link>
+                          <Link 
+                            href="/dashboard?chat=true" 
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
+                          >
+                            <Bot className="h-4 w-4" />
+                            Energon
+                          </Link>
+                          <Link 
+                            href="/settings" 
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
+                          >
+                            <Settings className="h-4 w-4" />
+                            Settings
+                          </Link>
+                        </nav>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
                   <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground">
                     Buildings Overview
                   </h1>
@@ -224,8 +263,8 @@ function DashboardContent() {
 
   return (
     <SidebarProvider>
-      <div className="flex">
-        <Sidebar>
+      <div className="flex min-h-screen">
+        <Sidebar className="border-r">
             <SidebarMenu>
             <SidebarMenuItem>
                 <SidebarMenuButton href="/dashboard" isActive={!showChat}>
@@ -247,7 +286,7 @@ function DashboardContent() {
             </SidebarMenuItem>
             </SidebarMenu>
         </Sidebar>
-        <SidebarInset>
+        <SidebarInset className="flex-1">
             <DashboardView buildings={buildings} currentTime={currentTime} />
         </SidebarInset>
       </div>

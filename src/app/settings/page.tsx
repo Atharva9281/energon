@@ -15,12 +15,14 @@ import {
   ArrowLeft,
   Save,
   RotateCcw,
+  Menu,
+  LayoutDashboard,
+  Bot,
 } from 'lucide-react';
 
 import {
   SidebarProvider,
   Sidebar,
-  SidebarTrigger,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -35,6 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const settingsSections = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -501,7 +504,47 @@ export default function SettingsPage() {
             {/* Mobile Header */}
             <div className="lg:hidden mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <SidebarTrigger className="flex-shrink-0" />
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="flex-shrink-0">
+                      <Menu className="h-5 w-5" />
+                      <span className="sr-only">Toggle Navigation</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-72 p-0">
+                    <div className="flex h-full flex-col">
+                      <div className="p-6">
+                        <h2 className="text-lg font-semibold">Navigation</h2>
+                      </div>
+                      <nav className="flex-1 space-y-2 p-4">
+                        <Button
+                          variant="ghost"
+                          onClick={() => router.push('/dashboard')}
+                          className="w-full justify-start gap-3"
+                        >
+                          <LayoutDashboard className="h-4 w-4" />
+                          Dashboard
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => router.push('/dashboard?chat=true')}
+                          className="w-full justify-start gap-3"
+                        >
+                          <Bot className="h-4 w-4" />
+                          Energon
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => router.push('/settings')}
+                          className="w-full justify-start gap-3 bg-muted"
+                        >
+                          <Settings className="h-4 w-4" />
+                          Settings
+                        </Button>
+                      </nav>
+                    </div>
+                  </SheetContent>
+                </Sheet>
                 <Button
                   variant="ghost"
                   size="sm"
