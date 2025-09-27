@@ -223,8 +223,8 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
 
   const chatInterface = (
        <div className={cn("flex h-full w-full", isFullScreen ? "bg-background" : "bg-background/80 backdrop-blur-sm")}>
-            {/* Left Sidebar */}
-            <div className="w-[280px] bg-[#F7F9FA] dark:bg-zinc-900/70 h-full flex flex-col p-3 gap-3 border-r">
+            {/* Left Sidebar - Hidden on mobile */}
+            <div className="hidden md:flex w-[280px] bg-[#F7F9FA] dark:bg-zinc-900/70 h-full flex-col p-3 gap-3 border-r">
                 <Button variant="outline" className="w-full justify-start gap-2" onClick={handleNewChat}>
                     <Plus className="w-4 h-4" />
                     New Chat
@@ -297,55 +297,81 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
             </div>
 
             {/* Right Main Chat Panel */}
-            <div className={cn("flex-1 flex flex-col h-full", isFullScreen ? "bg-background" : "bg-white dark:bg-zinc-900")}>
-                {/* Header */}
-                 <header className={cn("flex items-center justify-between p-4 border-b", isFullScreen && "hidden")}>
-                    <h2 className="text-xl font-bold">Energon – HVAC AI Assistant</h2>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="w-8 h-8"><MoreHorizontal/></Button>
-                        <Button variant="ghost" size="icon" className="w-8 h-8" onClick={() => setIsOpen(false)}><X/></Button>
+            <div className={cn("flex-1 flex flex-col h-full min-h-0", isFullScreen ? "bg-background" : "bg-white dark:bg-zinc-900")}>
+                {/* Header - Show on mobile for overlay, hidden for fullscreen */}
+                 <header className={cn("flex items-center justify-between p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm", isFullScreen && "md:hidden")}>
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {/* Mobile: Show New Chat button */}
+                        <Button variant="ghost" size="sm" className="md:hidden gap-2 flex-shrink-0" onClick={handleNewChat}>
+                            <Plus className="w-4 h-4" />
+                            <span className="hidden xs:inline">New</span>
+                        </Button>
+                        <h2 className="text-base md:text-lg lg:text-xl font-bold truncate">Energon Assistant</h2>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                        <Button variant="ghost" size="icon" className="w-8 h-8 md:w-9 md:h-9"><MoreHorizontal className="w-4 h-4"/></Button>
+                        <Button variant="ghost" size="icon" className="w-8 h-8 md:w-9 md:h-9" onClick={() => setIsOpen(false)}><X className="w-4 h-4"/></Button>
                     </div>
                 </header>
 
                 {/* Chat Body */}
-                <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {activeConversation?.messages.map((msg, index) => (
-                      <div
-                        key={index}
-                        className={`flex items-start gap-3 ${
-                          msg.role === 'user' ? 'justify-end' : 'justify-start'
-                        }`}
-                      >
-                        {msg.role === 'assistant' && <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0"><Bot className="w-5 h-5 text-primary" /></div>}
-                        <div
-                          className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                            msg.role === 'user'
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-muted'
-                          }`}
-                        >
-                          <p>{msg.content}</p>
-                           {msg.attachment && (
-                                <div className="mt-2 p-2 border-t border-black/10">
-                                    <p className="font-bold text-sm">Attachment:</p>
-                                    <p className="text-xs">{msg.attachment.name} ({msg.attachment.size})</p>
+                <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-6 space-y-3 md:space-y-4 lg:space-y-6 min-h-0">
+                    {activeConversation?.messages.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-center p-4 md:p-8">
+                            <Bot className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mb-3 md:mb-4" />
+                            <h3 className="text-base md:text-lg font-semibold mb-2">Welcome to Energon Assistant</h3>
+                            <p className="text-sm md:text-base text-muted-foreground max-w-md">
+                                Ask me about your HVAC systems, energy usage, building status, or any maintenance concerns.
+                            </p>
+                        </div>
+                    ) : (
+                        activeConversation?.messages.map((msg, index) => (
+                          <div
+                            key={index}
+                            className={`flex items-start gap-2 md:gap-3 w-full ${
+                              msg.role === 'user' ? 'justify-end' : 'justify-start'
+                            }`}
+                          >
+                            {msg.role === 'assistant' && (
+                                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
+                                    <Bot className="w-3 h-3 md:w-4 md:h-4 text-primary" />
                                 </div>
                             )}
-                        </div>
-                      </div>
-                    ))}
+                            <div
+                              className={`rounded-lg px-3 py-2 md:px-4 md:py-3 max-w-[85%] md:max-w-[75%] ${
+                                msg.role === 'user'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted'
+                              }`}
+                            >
+                              <p className="text-sm md:text-base leading-relaxed break-words">{msg.content}</p>
+                               {msg.attachment && (
+                                    <div className="mt-2 p-2 border-t border-black/10 dark:border-white/10">
+                                        <p className="font-bold text-xs md:text-sm">Attachment:</p>
+                                        <p className="text-xs">{msg.attachment.name} ({msg.attachment.size})</p>
+                                    </div>
+                                )}
+                            </div>
+                            {msg.role === 'user' && (
+                                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-1">
+                                    <MessageSquare className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
+                                </div>
+                            )}
+                          </div>
+                        ))
+                    )}
                     {!activeConversation && (
-                        <div className="flex h-full items-center justify-center text-muted-foreground">
-                            <p>Select a conversation or start a new one.</p>
+                        <div className="flex h-full items-center justify-center text-muted-foreground p-4">
+                            <p className="text-sm md:text-base">Select a conversation or start a new one.</p>
                         </div>
                     )}
                 </div>
 
                 {/* Footer Input */}
-                 <div className="p-4 border-t bg-background">
+                 <div className="p-3 md:p-4 border-t bg-background/95 backdrop-blur-sm">
                     <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-muted dark:bg-zinc-800 rounded-lg p-2">
-                         <Button type="button" size="icon" variant="ghost" onClick={() => fileInputRef.current?.click()}>
-                            <Paperclip className="w-5 h-5" />
+                         <Button type="button" size="icon" variant="ghost" className="w-8 h-8 md:w-9 md:h-9 flex-shrink-0" onClick={() => fileInputRef.current?.click()}>
+                            <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
                             <span className="sr-only">Upload file</span>
                         </Button>
                          <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
@@ -353,11 +379,11 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Ask Energon anything..."
-                            className="flex-1 w-full bg-transparent outline-none border-none focus:ring-0 text-sm px-2"
+                            className="flex-1 w-full bg-transparent outline-none border-none focus:ring-0 text-sm md:text-base px-2 min-w-0"
                             disabled={!activeConversation}
                         />
-                        <Button type="submit" size="icon" disabled={!input.trim() || !activeConversation}>
-                            <Send className="w-5 h-5" />
+                        <Button type="submit" size="icon" className="w-8 h-8 md:w-9 md:h-9 flex-shrink-0" disabled={!input.trim() || !activeConversation}>
+                            <Send className="w-4 h-4 md:w-5 md:h-5" />
                             <span className="sr-only">Send</span>
                         </Button>
                     </form>
