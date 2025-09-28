@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   Wifi,
   Menu,
+  MessageSquare,
 } from 'lucide-react';
 
 import {
@@ -224,12 +225,14 @@ function DashboardView({ buildings, currentTime }: { buildings: Building[], curr
 }
 
 function EnergonView() {
-     const router = useRouter();
+    const router = useRouter();
+    const [showMobileChatHistory, setShowMobileChatHistory] = useState(false);
+    
     return (
         <main className="flex-1 relative h-screen">
             {/* Navigation Header */}
             <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-3 md:p-4 bg-background/95 backdrop-blur-sm border-b">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                     {/* Mobile Navigation Menu */}
                     <Sheet>
                         <SheetTrigger asChild>
@@ -273,6 +276,17 @@ function EnergonView() {
                         </SheetContent>
                     </Sheet>
                     
+                    {/* Mobile Chat History Button */}
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="md:hidden"
+                        onClick={() => setShowMobileChatHistory(true)}
+                    >
+                        <MessageSquare className="h-4 w-4" />
+                        <span className="sr-only">Chat History</span>
+                    </Button>
+                    
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-2">
                         <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} className="gap-2">
@@ -299,7 +313,7 @@ function EnergonView() {
             
             {/* Chat Interface with top padding for header */}
             <div className="pt-16 md:pt-20 h-full">
-                <EnergonAssistant isFullScreen={true} />
+                <EnergonAssistant isFullScreen={true} showMobileChatHistory={showMobileChatHistory} onCloseMobileChatHistory={() => setShowMobileChatHistory(false)} />
             </div>
         </main>
     )

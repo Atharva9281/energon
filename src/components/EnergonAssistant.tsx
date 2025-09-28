@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 
 type Message = {
@@ -80,7 +81,15 @@ const mockChatHistory: Conversation[] = [
   },
 ];
 
-export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: boolean }) {
+export function EnergonAssistant({ 
+  isFullScreen = false, 
+  showMobileChatHistory = false, 
+  onCloseMobileChatHistory 
+}: { 
+  isFullScreen?: boolean; 
+  showMobileChatHistory?: boolean; 
+  onCloseMobileChatHistory?: () => void; 
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>(mockChatHistory);
   const [activeConversationId, setActiveConversationId] = useState<number | null>(
@@ -222,7 +231,92 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
   };
 
   const chatInterface = (
-       <div className={cn("flex h-full w-full", isFullScreen ? "bg-background" : "bg-background/80 backdrop-blur-sm")}>
+       <div className={cn("flex h-full w-full relative", isFullScreen ? "bg-background" : "bg-background/80 backdrop-blur-sm")}>
+            {/* Mobile Chat Sidebar - Only in fullscreen mode */}
+            {isFullScreen && (
+                <Sheet open={showMobileChatHistory} onOpenChange={onCloseMobileChatHistory}>
+                    <SheetContent side="left" className="w-80 p-0 z-50">
+                        <div className="flex h-full flex-col">
+                            <div className="p-4 border-b">
+                                <h2 className="text-lg font-semibold mb-3">Chat History</h2>
+                                <Button variant="outline" className="w-full justify-start gap-2" onClick={handleNewChat}>
+                                    <Plus className="w-4 h-4" />
+                                    New Chat
+                                </Button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-3">
+                                <div className="flex flex-col gap-1">
+                                    {conversations.map(convo => (
+                                        <div key={convo.id} className="group relative">
+                                            {renamingId === convo.id ? (
+                                                <form onSubmit={(e) => handleConfirmRename(e, convo.id)} className="p-1">
+                                                    <Input 
+                                                      value={renameInput}
+                                                      onChange={(e) => setRenameInput(e.target.value)}
+                                                      onBlur={() => setRenamingId(null)}
+                                                      autoFocus
+                                                      className="h-8"
+                                                    />
+                                                </form>
+                                            ) : (
+                                                <Button
+                                                    variant={activeConversationId === convo.id ? "secondary" : "ghost"}
+                                                    className="w-full justify-start gap-2 truncate pr-8"
+                                                    onClick={() => {
+                                                        setActiveConversationId(convo.id);
+                                                        onCloseMobileChatHistory?.();
+                                                    }}
+                                                >
+                                                    <MessageSquare className="w-4 h-4"/>
+                                                    <span className="flex-1 text-left truncate">{convo.title}</span>
+                                                </Button>
+                                            )}
+                                            {renamingId !== convo.id && (
+                                            <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="w-7 h-7">
+                                                            <MoreHorizontal className="w-4 h-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent side="bottom" align="start">
+                                                        <DropdownMenuItem onClick={() => handleStartRename(convo)}>
+                                                            <Edit className="w-4 h-4 mr-2" />
+                                                            Rename
+                                                        </DropdownMenuItem>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                                                    <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                                                                    <span className="text-destructive">Delete</span>
+                                                                </DropdownMenuItem>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This will permanently delete the chat &quot;{convo.title}&quot;. This action cannot be undone.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleDeleteChat(convo.id)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            )}
+            
             {/* Left Sidebar - Hidden on mobile */}
             <div className="hidden md:flex w-[280px] bg-[#F7F9FA] dark:bg-zinc-900/70 h-full flex-col p-3 gap-3 border-r">
                 <Button variant="outline" className="w-full justify-start gap-2" onClick={handleNewChat}>
@@ -302,7 +396,93 @@ export function EnergonAssistant({ isFullScreen = false }: { isFullScreen?: bool
                  {!isFullScreen && (
                  <header className="flex items-center justify-between p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                        {/* Mobile: Show New Chat button */}
+                        {/* Mobile: Show Chat History button */}
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="sm" className="md:hidden gap-2 flex-shrink-0">
+                                    <MessageSquare className="w-4 h-4" />
+                                    <span className="hidden xs:inline">Chats</span>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="left" className="w-80 p-0">
+                                <div className="flex h-full flex-col">
+                                    <div className="p-4 border-b">
+                                        <h2 className="text-lg font-semibold mb-3">Chat History</h2>
+                                        <Button variant="outline" className="w-full justify-start gap-2" onClick={handleNewChat}>
+                                            <Plus className="w-4 h-4" />
+                                            New Chat
+                                        </Button>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto p-3">
+                                        <div className="flex flex-col gap-1">
+                                            {conversations.map(convo => (
+                                                <div key={convo.id} className="group relative">
+                                                    {renamingId === convo.id ? (
+                                                        <form onSubmit={(e) => handleConfirmRename(e, convo.id)} className="p-1">
+                                                            <Input 
+                                                              value={renameInput}
+                                                              onChange={(e) => setRenameInput(e.target.value)}
+                                                              onBlur={() => setRenamingId(null)}
+                                                              autoFocus
+                                                              className="h-8"
+                                                            />
+                                                        </form>
+                                                    ) : (
+                                                        <Button
+                                                            variant={activeConversationId === convo.id ? "secondary" : "ghost"}
+                                                            className="w-full justify-start gap-2 truncate pr-8"
+                                                            onClick={() => setActiveConversationId(convo.id)}
+                                                        >
+                                                            <MessageSquare className="w-4 h-4"/>
+                                                            <span className="flex-1 text-left truncate">{convo.title}</span>
+                                                        </Button>
+                                                    )}
+                                                    {renamingId !== convo.id && (
+                                                    <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="icon" className="w-7 h-7">
+                                                                    <MoreHorizontal className="w-4 h-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent side="bottom" align="start">
+                                                                <DropdownMenuItem onClick={() => handleStartRename(convo)}>
+                                                                    <Edit className="w-4 h-4 mr-2" />
+                                                                    Rename
+                                                                </DropdownMenuItem>
+                                                                <AlertDialog>
+                                                                    <AlertDialogTrigger asChild>
+                                                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                                                            <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                                                                            <span className="text-destructive">Delete</span>
+                                                                        </DropdownMenuItem>
+                                                                    </AlertDialogTrigger>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                                            <AlertDialogDescription>
+                                                                                This will permanently delete the chat &quot;{convo.title}&quot;. This action cannot be undone.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                            <AlertDialogAction onClick={() => handleDeleteChat(convo.id)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                        
+                        {/* Mobile: New Chat button */}
                         <Button variant="ghost" size="sm" className="md:hidden gap-2 flex-shrink-0" onClick={handleNewChat}>
                             <Plus className="w-4 h-4" />
                             <span className="hidden xs:inline">New</span>
